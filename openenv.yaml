@@ -1,6 +1,4 @@
 spec_version: 1
 name: email_triage_openenv
 type: space
-runtime: fastapi
-app: server.app:app
-port: 7860
+runtime: docker

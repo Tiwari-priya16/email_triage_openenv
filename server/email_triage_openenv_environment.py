@@ -16,8 +16,10 @@ from uuid import uuid4
 from openenv.core.env_server.interfaces import Environment
 from openenv.core.env_server.types import State
 
-# ✅ FIXED import (use absolute package path)
-from email_triage_openenv.models import EmailTriageOpenenvAction, EmailTriageOpenenvObservation
+try:
+    from ..models import EmailTriageOpenenvAction, EmailTriageOpenenvObservation
+except ImportError:
+    from models import EmailTriageOpenenvAction, EmailTriageOpenenvObservation
 
 
 class EmailTriageOpenenvEnvironment(Environment):
