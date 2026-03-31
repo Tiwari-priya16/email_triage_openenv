@@ -17,7 +17,8 @@ A simple test environment that echoes back messages. Perfect for testing the env
 The simplest way to use the Email Triage Openenv environment is through the `EmailTriageOpenenvEnv` class:
 
 ```python
-from email_triage_openenv import EmailTriageOpenenvAction, EmailTriageOpenenvEnv
+from email_triage_openenv.models import EmailTriageOpenenvAction
+from email_triage_openenv.client import EmailTriageOpenenvEnv
 
 try:
     # Create environment from Docker image
@@ -140,7 +141,8 @@ The reward is calculated as: `message_length × 0.1`
 If you already have a Email Triage Openenv environment server running, you can connect directly:
 
 ```python
-from email_triage_openenv import EmailTriageOpenenvEnv
+from client import EmailTriageOpenenvEnv
+from models import EmailTriageOpenenvAction
 
 # Connect to existing server
 email_triage_openenvenv = EmailTriageOpenenvEnv(base_url="<ENV_HTTP_URL_HERE>")
@@ -157,7 +159,8 @@ Note: When connecting to an existing server, `email_triage_openenvenv.close()` w
 The client supports context manager usage for automatic connection management:
 
 ```python
-from email_triage_openenv import EmailTriageOpenenvAction, EmailTriageOpenenvEnv
+from client import EmailTriageOpenenvEnv
+from models import EmailTriageOpenenvAction
 
 # Connect with context manager (auto-connects and closes)
 with EmailTriageOpenenvEnv(base_url="http://localhost:8000") as env:
@@ -192,7 +195,8 @@ app = create_app(
 Then multiple clients can connect simultaneously:
 
 ```python
-from email_triage_openenv import EmailTriageOpenenvAction, EmailTriageOpenenvEnv
+from email_triage_openenv.models import EmailTriageOpenenvAction
+from email_triage_openenv.client import EmailTriageOpenenvEnv
 from concurrent.futures import ThreadPoolExecutor
 
 def run_episode(client_id: int):
@@ -235,18 +239,16 @@ uvicorn server.app:app --reload
 ## Project Structure
 
 ```
-email_triage_openenv/
-├── .dockerignore         # Docker build exclusions
-├── __init__.py            # Module exports
-├── README.md              # This file
-├── openenv.yaml           # OpenEnv manifest
-├── pyproject.toml         # Project metadata and dependencies
-├── uv.lock                # Locked dependencies (generated)
-├── client.py              # EmailTriageOpenenvEnv client
-├── models.py              # Action and Observation models
+EMAIL_TRIAGE_OPENENV/
+├── README.md
+├── openenv.yaml
+├── pyproject.toml
+├── uv.lock
+├── client.py
+├── models.py
 └── server/
-    ├── __init__.py        # Server module exports
-    ├── email_triage_openenv_environment.py  # Core environment logic
-    ├── app.py             # FastAPI application (HTTP + WebSocket endpoints)
-    └── Dockerfile         # Container image definition
+    ├── __init__.py
+    ├── email_triage_openenv_environment.py
+    ├── app.py
+    └── Dockerfile
 ```
