@@ -59,6 +59,11 @@ FROM ${BASE_IMAGE}
 
 WORKDIR /app
 
+# ✅ FIX: install curl (required for HEALTHCHECK)
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends curl && \
+    rm -rf /var/lib/apt/lists/*
+
 # Copy the virtual environment from builder
 COPY --from=builder /app/env/.venv /app/.venv
 
@@ -68,8 +73,8 @@ COPY --from=builder /app/env /app/env
 # Set PATH to use the virtual environment
 ENV PATH="/app/.venv/bin:$PATH"
 
-# Set PYTHONPATH so imports work correctly
-ENV PYTHONPATH="/app/env:$PYTHONPATH"
+# ✅ FIX: correct PYTHONPATH
+ENV PYTHONPATH="/app/env"
 
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
  CMD curl -f http://localhost:7860/health || exit 1
