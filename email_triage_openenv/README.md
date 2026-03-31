@@ -1,14 +1,11 @@
 ---
 title: Email Triage Openenv Environment Server
 emoji: 🥅
-colorFrom: green
-colorTo: green
+colorFrom: blue
+colorTo: purple
 sdk: docker
+app_file: server/app.py
 pinned: false
-app_port: 8000
-base_path: /web
-tags:
-  - openenv
 ---
 
 # Email Triage Openenv Environment
