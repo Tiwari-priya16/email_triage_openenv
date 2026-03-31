@@ -16,10 +16,8 @@ from uuid import uuid4
 from openenv.core.env_server.interfaces import Environment
 from openenv.core.env_server.types import State
 
-try:
-    from ..models import EmailTriageOpenenvAction, EmailTriageOpenenvObservation
-except ImportError:
-    from models import EmailTriageOpenenvAction, EmailTriageOpenenvObservation
+# ✅ FIXED import (use absolute package path)
+from email_triage_openenv.models import EmailTriageOpenenvAction, EmailTriageOpenenvObservation
 
 
 class EmailTriageOpenenvEnvironment(Environment):
@@ -39,10 +37,6 @@ class EmailTriageOpenenvEnvironment(Environment):
         >>> print(obs.message_length)  # 5
     """
 
-    # Enable concurrent WebSocket sessions.
-    # Set to True if your environment isolates state between instances.
-    # When True, multiple WebSocket clients can connect simultaneously, each
-    # getting their own environment instance (when using factory mode in app.py).
     SUPPORTS_CONCURRENT_SESSIONS: bool = True
 
     def __init__(self):
@@ -70,19 +64,12 @@ class EmailTriageOpenenvEnvironment(Environment):
     def step(self, action: EmailTriageOpenenvAction) -> EmailTriageOpenenvObservation:  # type: ignore[override]
         """
         Execute a step in the environment by echoing the message.
-
-        Args:
-            action: EmailTriageOpenenvAction containing the message to echo
-
-        Returns:
-            EmailTriageOpenenvObservation with the echoed message and its length
         """
         self._state.step_count += 1
 
         message = action.message
         length = len(message)
 
-        # Simple reward: longer messages get higher rewards
         reward = length * 0.1
 
         return EmailTriageOpenenvObservation(
@@ -95,10 +82,5 @@ class EmailTriageOpenenvEnvironment(Environment):
 
     @property
     def state(self) -> State:
-        """
-        Get the current environment state.
-
-        Returns:
-            Current State with episode_id and step_count
-        """
+        """Get the current environment state."""
         return self._state
