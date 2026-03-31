@@ -1,6 +1,6 @@
 SmartEmailTriage-OpenEnv 🔥
 
-Winner-ready RL environment for enterprise email triage — built for Meta PyTorch OpenEnv Hackathon Round 1.
+RL environment for enterprise email triage — built for Meta PyTorch OpenEnv Hackathon Round 1.
 
 ---
 
