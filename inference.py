@@ -11,7 +11,7 @@ MODEL_NAME = os.getenv("MODEL_NAME", "meta-llama/Meta-Llama-3.1-8B-Instruct")
 client = OpenAI(base_url=API_BASE_URL, api_key=HF_TOKEN)
 
 # ⚠️ IMPORTANT: replace localhost with YOUR HF SPACE URL
-env_client = create_client("https://priyatiwari16-email-triage-openenv.hf.space")
+env_client = create_client("https://priyatiwari16_email_triage_openenv.hf.space")
 
 TASKS = ["easy", "medium", "hard"]
 MAX_STEPS = 15
