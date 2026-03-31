@@ -77,7 +77,7 @@ The `openenv push` command will:
 2. Prepare a custom build for Hugging Face Docker space (enables web interface)
 3. Upload to Hugging Face (ensuring you're logged in)
 
-### Prerequisites
+### Prerequisites needed
 
 - Authenticate with Hugging Face: The command will prompt for login if not already authenticated
 
