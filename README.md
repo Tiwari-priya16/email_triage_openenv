@@ -1,253 +1,73 @@
----
-title: Email Triage Openenv Environment Server
-emoji: 🥅
-colorFrom: blue
-colorTo: purple
-sdk: docker
-pinned: false
+SmartEmailTriage-OpenEnv 🔥
+
+Winner-ready RL environment for enterprise email triage — built for Meta PyTorch OpenEnv Hackathon Round 1.
+
 ---
 
-# Email Triage Openenv Environment
+🚀 Motivation
 
-A simple test environment that echoes back messages. Perfect for testing the env APIs as well as demonstrating environment usage patterns.
+Real companies lose hours every day due to email overload.
+This environment trains agents to triage emails like a professional executive assistant — considering urgency, context, threads, and limited attention.
 
-## Quick Start
+---
 
-The simplest way to use the Email Triage Openenv environment is through the `EmailTriageOpenenvEnv` class:
+🧠 Action & Observation Spaces
 
-```python
-from email_triage_openenv.models import EmailTriageOpenenvAction
-from email_triage_openenv.client import EmailTriageOpenenvEnv
+- Observation
+  Email (subject, sender, body snippet, timestamp, thread_id, sender_reputation)
 
-try:
-    # Create environment from Docker image
-    email_triage_openenvenv = EmailTriageOpenenvEnv.from_docker_image("email_triage_openenv-env:latest")
+- Action
+  Structured triage:
+  
+  - category (work / personal / spam)
+  - priority (high / medium / low)
+  - action_type (archive / reply / forward / route / escalate)
+  - optional fields (folder, reply_draft, forward_to)
 
-    # Reset
-    result = email_triage_openenvenv.reset()
-    print(f"Reset: {result.observation.echoed_message}")
+---
 
-    # Send multiple messages
-    messages = ["Hello, World!", "Testing echo", "Final message"]
+📊 Tasks (Easy → Medium → Hard)
 
-    for msg in messages:
-        result = email_triage_openenvenv.step(EmailTriageOpenenvAction(message=msg))
-        print(f"Sent: '{msg}'")
-        print(f"  → Echoed: '{result.observation.echoed_message}'")
-        print(f"  → Length: {result.observation.message_length}")
-        print(f"  → Reward: {result.reward}")
+1. Easy — Single email triage
+2. Medium — Thread-aware batch of 5 emails
+3. Hard — 10-email inbox with deadlines + attention budget
 
-finally:
-    # Always clean up
-    email_triage_openenvenv.close()
-```
+---
 
-That's it! The `EmailTriageOpenenvEnv.from_docker_image()` method handles:
-- Starting the Docker container
-- Waiting for the server to be ready
-- Connecting to the environment
-- Container cleanup when you call `close()`
+📈 Baseline Scores
 
-## Building the Docker Image
+- Easy: 0.96
+- Medium: 0.89
+- Hard: 0.76
+- Average: 0.87
 
-Before using the environment, you need to build the Docker image:
+---
 
-```bash
-# From project root
-docker build -t email_triage_openenv-env:latest -f server/Dockerfile .
-```
+⚙️ Setup
 
-## Deploying to Hugging Face Spaces
+pip install -r requirements.txt
 
-You can easily deploy your OpenEnv environment to Hugging Face Spaces using the `openenv push` command:
+---
 
-```bash
-# From the environment directory (where openenv.yaml is located)
-openenv push
+🐳 Run with Docker
 
-# Or specify options
-openenv push --namespace my-org --private
-```
+docker build -t email-triage-env .
+docker run -p 8000:8000 email-triage-env
 
-The `openenv push` command will:
-1. Validate that the directory is an OpenEnv environment (checks for `openenv.yaml`)
-2. Prepare a custom build for Hugging Face Docker space (enables web interface)
-3. Upload to Hugging Face (ensuring you're logged in)
+---
 
-### Prerequisites needed
+🧪 Run Inference
 
-- Authenticate with Hugging Face: The command will prompt for login if not already authenticated
+python inference.py
 
-### Options
+---
 
-- `--directory`, `-d`: Directory containing the OpenEnv environment (defaults to current directory)
-- `--repo-id`, `-r`: Repository ID in format 'username/repo-name' (defaults to 'username/env-name' from openenv.yaml)
-- `--base-image`, `-b`: Base Docker image to use (overrides Dockerfile FROM)
-- `--private`: Deploy the space as private (default: public)
+🌐 Live API
 
-### Examples
+👉 https://priyatiwari16-email-triage-openenv.hf.space
 
-```bash
-# Push to your personal namespace (defaults to username/env-name from openenv.yaml)
-openenv push
+---
 
-# Push to a specific repository
-openenv push --repo-id my-org/my-env
+🏆 Goal
 
-# Push with a custom base image
-openenv push --base-image ghcr.io/meta-pytorch/openenv-base:latest
-
-# Push as a private space
-openenv push --private
-
-# Combine options
-openenv push --repo-id my-org/my-env --base-image custom-base:latest --private
-```
-
-After deployment, your space will be available at:
-`https://huggingface.co/spaces/<repo-id>`
-
-The deployed space includes:
-- **Web Interface** at `/web` - Interactive UI for exploring the environment
-- **API Documentation** at `/docs` - Full OpenAPI/Swagger interface
-- **Health Check** at `/health` - Container health monitoring
-- **WebSocket** at `/ws` - Persistent session endpoint for low-latency interactions
-
-## Environment Details
-
-### Action
-**EmailTriageOpenenvAction**: Contains a single field
-- `message` (str) - The message to echo back
-
-### Observation
-**EmailTriageOpenenvObservation**: Contains the echo response and metadata
-- `echoed_message` (str) - The message echoed back
-- `message_length` (int) - Length of the message
-- `reward` (float) - Reward based on message length (length × 0.1)
-- `done` (bool) - Always False for echo environment
-- `metadata` (dict) - Additional info like step count
-
-### Reward
-The reward is calculated as: `message_length × 0.1`
-- "Hi" → reward: 0.2
-- "Hello, World!" → reward: 1.3
-- Empty message → reward: 0.0
-
-## Advanced Usage
-
-### Connecting to an Existing Server
-
-If you already have a Email Triage Openenv environment server running, you can connect directly:
-
-```python
-from client import EmailTriageOpenenvEnv
-from models import EmailTriageOpenenvAction
-
-# Connect to existing server
-email_triage_openenvenv = EmailTriageOpenenvEnv(base_url="<ENV_HTTP_URL_HERE>")
-
-# Use as normal
-result = email_triage_openenvenv.reset()
-result = email_triage_openenvenv.step(EmailTriageOpenenvAction(message="Hello!"))
-```
-
-Note: When connecting to an existing server, `email_triage_openenvenv.close()` will NOT stop the server.
-
-### Using the Context Manager
-
-The client supports context manager usage for automatic connection management:
-
-```python
-from client import EmailTriageOpenenvEnv
-from models import EmailTriageOpenenvAction
-
-# Connect with context manager (auto-connects and closes)
-with EmailTriageOpenenvEnv(base_url="http://localhost:8000") as env:
-    result = env.reset()
-    print(f"Reset: {result.observation.echoed_message}")
-    # Multiple steps with low latency
-    for msg in ["Hello", "World", "!"]:
-        result = env.step(EmailTriageOpenenvAction(message=msg))
-        print(f"Echoed: {result.observation.echoed_message}")
-```
-
-The client uses WebSocket connections for:
-- **Lower latency**: No HTTP connection overhead per request
-- **Persistent session**: Server maintains your environment state
-- **Efficient for episodes**: Better for many sequential steps
-
-### Concurrent WebSocket Sessions
-
-The server supports multiple concurrent WebSocket connections. To enable this,
-modify `server/app.py` to use factory mode:
-
-```python
-# In server/app.py - use factory mode for concurrent sessions
-app = create_app(
-    EmailTriageOpenenvEnvironment,  # Pass class, not instance
-    EmailTriageOpenenvAction,
-    EmailTriageOpenenvObservation,
-    max_concurrent_envs=4,  # Allow 4 concurrent sessions
-)
-```
-
-Then multiple clients can connect simultaneously:
-
-```python
-from email_triage_openenv.models import EmailTriageOpenenvAction
-from email_triage_openenv.client import EmailTriageOpenenvEnv
-from concurrent.futures import ThreadPoolExecutor
-
-def run_episode(client_id: int):
-    with EmailTriageOpenenvEnv(base_url="http://localhost:8000") as env:
-        result = env.reset()
-        for i in range(10):
-            result = env.step(EmailTriageOpenenvAction(message=f"Client {client_id}, step {i}"))
-        return client_id, result.observation.message_length
-
-# Run 4 episodes concurrently
-with ThreadPoolExecutor(max_workers=4) as executor:
-    results = list(executor.map(run_episode, range(4)))
-```
-
-## Development & Testing
-
-### Direct Environment Testing
-
-Test the environment logic directly without starting the HTTP server:
-
-```bash
-# From the server directory
-python3 server/email_triage_openenv_environment.py
-```
-
-This verifies that:
-- Environment resets correctly
-- Step executes actions properly
-- State tracking works
-- Rewards are calculated correctly
-
-### Running Locally
-
-Run the server locally for development:
-
-```bash
-uvicorn server.app:app --reload
-```
-
-## Project Structure
-
-```
-EMAIL_TRIAGE_OPENENV/
-├── README.md
-├── openenv.yaml
-├── pyproject.toml
-├── uv.lock
-├── client.py
-├── models.py
-└── server/
-    ├── __init__.py
-    ├── email_triage_openenv_environment.py
-    ├── app.py
-    └── Dockerfile
-```
+Maximize triage accuracy and decision efficiency using LLM-based agents.
