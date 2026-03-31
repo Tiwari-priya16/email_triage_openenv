@@ -1,30 +1,34 @@
 import os
 import json
 from openai import OpenAI
-from openenv.core import create_client
+from openenv.core import create_llm_client  # ✅ FIXED
 from models import TriageAction
 
+# ---------------- CONFIG ----------------
 API_BASE_URL = os.getenv("API_BASE_URL", "https://router.huggingface.co/v1")
 HF_TOKEN = os.getenv("HF_TOKEN") or os.getenv("API_KEY")
 MODEL_NAME = os.getenv("MODEL_NAME", "meta-llama/Meta-Llama-3.1-8B-Instruct")
 
 client = OpenAI(base_url=API_BASE_URL, api_key=HF_TOKEN)
 
-# ⚠️ IMPORTANT: replace localhost with YOUR HF SPACE URL
-env_client = create_client("https://priyatiwari16_email_triage_openenv.hf.space")
+# ✅ CORRECT HF SPACE URL
+BASE_URL = "https://priyatiwari16-email-triage-openenv.hf.space"
+
+# ✅ FIXED CLIENT
+env_client = create_llm_client(base_url=BASE_URL)
 
 TASKS = ["easy", "medium", "hard"]
 MAX_STEPS = 15
 
-
+# ---------------- LLM ----------------
 def get_llm_action(obs):
     prompt = f"""
 You are an expert email triage agent.
 
-Current email:
+Email:
 {obs.model_dump_json(indent=2)}
 
-Choose one action as JSON matching TriageAction schema.
+Return ONLY valid JSON matching TriageAction schema.
 """
 
     response = client.chat.completions.create(
@@ -40,7 +44,7 @@ Choose one action as JSON matching TriageAction schema.
     except:
         return TriageAction(category="spam", priority="low", action_type="archive")
 
-
+# ---------------- RUN ----------------
 scores = {}
 
 for task in TASKS:
