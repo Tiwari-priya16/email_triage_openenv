@@ -12,7 +12,8 @@ from openenv.core import EnvClient
 from openenv.core.client_types import StepResult
 from openenv.core.env_server.types import State
 
-from .models import EmailTriageOpenenvAction, EmailTriageOpenenvObservation
+
+from models import EmailTriageOpenenvAction, EmailTriageOpenenvObservation
 
 
 class EmailTriageOpenenvEnv(
@@ -98,13 +99,15 @@ class EmailTriageOpenenvEnv(
             step_count=payload.get("step_count", 0),
         )
 
-    if __name__ == "__main__":
-        import requests
 
-        print("Testing server...")
 
-        res = requests.get("http://localhost:8000/health")
-        print("Health:", res.json())
+if __name__ == "__main__":
+    import requests
 
-        res = requests.post("http://localhost:8000/reset")
-        print("Reset:", res.json())
+    print("Testing server...")
+
+    res = requests.get("http://localhost:8000/health")
+    print("Health:", res.json())
+
+    res = requests.post("http://localhost:8000/reset")
+    print("Reset:", res.json())
