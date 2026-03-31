@@ -1,4 +1,10 @@
+#### `openenv.yaml`
+```yaml
 spec_version: 1
-name: email_triage_openenv
+name: email-triage-env
 type: space
-runtime: docker
+runtime: fastapi
+app: server.app:app
+port: 8000
+description: Enterprise email triage RL environment with 3 tiered tasks, dense rewards, and agent graders
+tags: [email, triage, agentic, rl, enterprise]
